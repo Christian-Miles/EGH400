@@ -5,12 +5,14 @@ from pprint import pprint
 class Flight:
     def __init__(self, filename):
         self.filename = filename
+        self.extract_data()
 
+    def extract_data(self):
         try:
             self.earth_model = "WGS84"
             self.nav_data = []
 
-            with open(filename, "r") as f:
+            with open(self.filename, "r") as f:
                 for line in f:
                     if "HFPLTPILOTINCHARGE" in line:
                         self.pilot = line[19:].strip()
@@ -48,12 +50,26 @@ class Flight:
         except IOError:
             print("Error: File not found")
 
+    def analyse_data(self):
+        pass
 
-a = Flight(
-    "D:/Users/Christian/Study/Year 5/Semester 1/flights/Andrew Tracey-Smith - 23.1.2022.igc"
-)
-print(a.pilot)
-print(a.glider_type)
-print(a.flight_site)
-print(a.flight_date)
-pprint(a.nav_data)
+
+def dms2dec(WGS84data):
+    multiplier = 1 if WGS84data[-1] in ["N", "E"] else -1
+    if len(WGS84data) == 9:
+        return multiplier * (
+            int(WGS84data[0:3])
+            + int(WGS84data[3:5]) / 60
+            + int(WGS84data[5:-1]) / 36000
+        )
+    else:
+        return multiplier * (
+            int(WGS84data[0:2])
+            + int(WGS84data[2:4]) / 60
+            + int(WGS84data[4:-1]) / 36000
+        )
+
+
+# a = Flight(
+#    "/Users/christianmiles/Documents/egh400-2/EGH400/2023-01-02-XCT-LVY-01.igc"
+# )
